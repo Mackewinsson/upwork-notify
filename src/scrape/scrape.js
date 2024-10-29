@@ -1,6 +1,6 @@
 const puppeteer = require("puppeteer");
 const cheerio = require("cheerio");
-
+const sendToSlack = require("./sendToSlack");
 // Function to check for new jobs
 const checkForNewJobs = async () => {
     const browser = await puppeteer.launch({ headless: true });
@@ -9,7 +9,7 @@ const checkForNewJobs = async () => {
     await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36");
     await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
 
-    await page.goto("https://www.upwork.com/nx/search/jobs/?q=react", {
+    await page.goto("https://www.upwork.com/nx/search/jobs/", {
         waitUntil: "networkidle2",
     });
 
@@ -61,20 +61,26 @@ const monitorJobs = async () => {
     const foundNewJobs = newJobs.filter(
         (job) => !previousJobUids.includes(job.uid)
     );
-    // Only log if not the first run and new jobs are found
+
     if (!isFirstRun && foundNewJobs.length > 0) {
-        foundNewJobs.forEach((job) => {
-            console.log(`New Job Found: ${job.title} - ${job.link}`);
+        foundNewJobs.forEach(async (job) => {
+            await sendToSlack(job);
         });
+        return { newJobs: foundNewJobs.length };
+    } else if (!isFirstRun) {
+        console.log("No new jobs found");
+    }
+
+    // Log all jobs if it’s the first run for reference
+    if (isFirstRun) {
+        console.log("Initial run - jobs found:", newJobs.length);
+
     }
 
     // Update previous jobs array and reset isFirstRun flag
     previousJobs = newJobs;
-    isFirstRun = false; // Mark the first run as complete
+    isFirstRun = false;
 };
 
-// Run the job monitor every 5 minutes (300000 milliseconds)
-setInterval(monitorJobs, 30000);
-
-// Initial call to set up previous jobs
-monitorJobs();
+// Export the function to check for new jobs
+module.exports = monitorJobs;
