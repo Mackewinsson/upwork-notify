@@ -4,7 +4,7 @@ const monitorJobsForTask = require("../scrape/scrape"); // Your existing scraper
 
 // Function to run periodic scraping
 const startScraperScheduler = () => {
-    cron.schedule("* * * * *", async () => {
+    cron.schedule("*/15 * * * *", async () => {
         console.log("Running scheduled scraper...");
 
         try {
