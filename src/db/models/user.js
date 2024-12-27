@@ -35,7 +35,8 @@ const UserSchema = new mongoose.Schema(
             maxTasks: { type: Number, default: 1 }, // Maximum tasks allowed
             minInterval: { type: Number, default: 30 }, // Minimum interval in minutes
         },
-        tasks: [TaskSchema], // Embedded array of tasks
+        tasks: [TaskSchema],
+        default: [], // Initialize as an empty array, // Embedded array of tasks
     },
     {
         timestamps: true,
