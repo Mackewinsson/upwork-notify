@@ -9,7 +9,6 @@ router.post("/:userId/tasks", async (req, res) => {
 
     try {
         const user = await User.findById(userId);
-
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
