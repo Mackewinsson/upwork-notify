@@ -5,7 +5,6 @@ const { default: axios } = require("axios");
 async function sendToSlack(item) {
   const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
   try {
-    console.log('item',item)
     await axios.post(slackWebhookUrl, {
       text: `New item: ${item.title}\nLink: ${item.link}`,
     });
