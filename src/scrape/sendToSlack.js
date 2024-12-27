@@ -2,10 +2,10 @@ require("dotenv").config();
 
 const { default: axios } = require("axios");
 
-async function sendToSlack(item) {
-  const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
+
+async function sendToSlack(item, webhookUrl) {
   try {
-    await axios.post(slackWebhookUrl, {
+    await axios.post(webhookUrl, {
       text: `New item: ${item.title}\nLink: ${item.link}`,
     });
   } catch (error) {

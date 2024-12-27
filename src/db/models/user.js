@@ -6,6 +6,7 @@ const TaskSchema = new mongoose.Schema(
         interval: { type: Number, default: 15 }, // Interval in minutes
         lastRun: { type: Date, default: null }, // Last time the task ran
         notifiedJobUids: [String], // Array of job UUIDs already notified for this task
+        webhookUrl: { type: String, required: true }, // Slack webhook URL for notifications
     },
     {
         timestamps: true,

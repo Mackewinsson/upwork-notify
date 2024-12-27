@@ -99,7 +99,7 @@ const monitorJobsForTask = async (user, task) => {
 
         for (const job of newJobs) {
             // Notify Slack
-            await sendToSlack(job);
+            await sendToSlack(job, task.webhookUrl);
 
             // Add job UID to the notified list
             task.notifiedJobUids.push(job.uid);
