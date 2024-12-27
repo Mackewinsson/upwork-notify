@@ -7,7 +7,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes');
 var scrapeRouter = require('./routes/scrape');
 var taskRouter = require('./routes/tasks');
-
+var startScraperScheduler = require('./scheduler/scheduler')
 const connectDB = require("./db/db");
 
 var app = express();
@@ -30,6 +30,7 @@ app.use('/', indexRouter);
 app.use("/api/users/", taskRouter); // Fixed route path
 app.use("/api/scrape", scrapeRouter); // Fixed route path
 
+startScraperScheduler()
 // Catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
