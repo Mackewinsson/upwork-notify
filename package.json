@@ -15,8 +15,11 @@
     "ejs": "~2.6.1",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
+    "install": "^0.13.0",
     "mongoose": "^8.9.2",
     "morgan": "~1.9.1",
+    "node-cron": "^3.0.3",
+    "npm": "^11.0.0",
     "puppeteer": "^23.0.2",
     "puppeteer-core": "^23.11.1"
   },
