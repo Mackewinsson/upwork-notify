@@ -9,8 +9,14 @@ router.post("/:userId/tasks", async (req, res) => {
 
     try {
         const user = await User.findById(userId);
+
         if (!user) {
             return res.status(404).json({ error: "User not found" });
+        }
+
+        // Check if user has reached their max task limit
+        if (user.tasks.length >= user.subscriptionLimits.maxTasks) {
+            return res.status(403).json({ error: "Task limit exceeded for your current subscription" });
         }
 
         // Validate webhookUrl
@@ -18,6 +24,7 @@ router.post("/:userId/tasks", async (req, res) => {
             return res.status(400).json({ error: "Invalid Slack webhook URL" });
         }
 
+        // Create a new task
         const newTask = {
             url,
             interval,
