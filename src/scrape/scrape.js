@@ -9,11 +9,15 @@ function delay(time) {
 
 // Function to scrape jobs with retry mechanism
 const checkForNewJobs = async (url, maxRetries = 3) => {
+    const isHeadless = process.env.PUPPETEER_HEADLESS
+        ? process.env.PUPPETEER_HEADLESS === "true"
+        : process.env.NODE_ENV === "production";
+
     let browser;
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
             browser = await puppeteer.launch({
-                headless: false, // Set to true for production
+                headless: isHeadless, // Set to true for production
                 args: ["--no-sandbox", "--disable-setuid-sandbox"], // Stability improvements
             });
 

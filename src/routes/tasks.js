@@ -14,11 +14,21 @@ router.post("/:userId/tasks", async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
-        const newTask = {
-            url,
-            interval,
-        };
+        // Validate task limits based on subscription
+        if (user.tasks.length >= user.subscriptionLimits.maxTasks) {
+            return res.status(403).json({
+                error: `Task limit exceeded. Maximum allowed: ${user.subscriptionLimits.maxTasks}`,
+            });
+        }
 
+        if (interval < user.subscriptionLimits.minInterval) {
+            return res.status(400).json({
+                error: `Interval too short. Minimum allowed: ${user.subscriptionLimits.minInterval} minutes.`,
+            });
+        }
+
+        // Create and save the new task
+        const newTask = { url, interval };
         user.tasks.push(newTask);
         await user.save();
 
@@ -65,6 +75,14 @@ router.put("/:userId/tasks/:taskId", async (req, res) => {
             return res.status(404).json({ error: "Task not found" });
         }
 
+        // Validate interval for the update
+        if (interval && interval < user.subscriptionLimits.minInterval) {
+            return res.status(400).json({
+                error: `Interval too short. Minimum allowed: ${user.subscriptionLimits.minInterval} minutes.`,
+            });
+        }
+
+        // Update the task fields
         if (url) task.url = url;
         if (interval) task.interval = interval;
 

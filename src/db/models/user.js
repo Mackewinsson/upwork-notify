@@ -30,11 +30,27 @@ const UserSchema = new mongoose.Schema(
             enum: ["free", "pro"],
             default: "free",
         },
+        subscriptionLimits: {
+            maxTasks: { type: Number, default: 1 }, // Maximum tasks allowed
+            minInterval: { type: Number, default: 30 }, // Minimum interval in minutes
+        },
         tasks: [TaskSchema], // Embedded array of tasks
     },
     {
         timestamps: true,
     }
 );
+
+// Pre-save hook to set default subscription limits for new users
+UserSchema.pre("save", function (next) {
+    if (this.isNew && this.subscriptionType === "free") {
+        this.subscriptionLimits = {
+            maxTasks: 1,
+            minInterval: 30,
+        };
+    }
+
+    next();
+});
 
 module.exports = mongoose.models.User || mongoose.model("User", UserSchema);
