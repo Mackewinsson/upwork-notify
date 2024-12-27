@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node src/bin/www"
+    "start": "node src/bin/www",
+    "dev": "nodemon src/bin/www"
   },
   "dependencies": {
     "axios": "^1.7.3",
@@ -15,6 +16,10 @@
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
-    "puppeteer": "^23.0.2"
+    "puppeteer": "^23.0.2",
+    "puppeteer-core": "^23.11.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
   }
 }

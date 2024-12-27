@@ -1,30 +1,28 @@
 const puppeteer = require("puppeteer");
 const cheerio = require("cheerio");
 const sendToSlack = require("./sendToSlack");
+
+function delay(time) {
+    return new Promise(resolve => setTimeout(resolve, time));
+}
 // Function to check for new jobs
 const checkForNewJobs = async () => {
     const browser = await puppeteer.launch({
-        args: [
-            "--disable-setuid-sandbox",
-            "--no-sandbox",
-            "--single-process",
-            "--no-zygote",
-        ],
-        executablePath:
-            process.env.NODE_ENV === "production"
-                ? process.env.PUPPETEER_EXECUTABLE_PATH
-                : puppeteer.executablePath(),
+        headless: false
     });
-    const page = await browser.newPage();
 
+    try {
+    const page = await browser.newPage();
+    await delay(2000)
     await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36");
     await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
-
+    await delay(2000)
     await page.goto("https://www.upwork.com/nx/search/jobs/", {
-        waitUntil: "networkidle2",
+        waitUntil: ["networkidle2", "domcontentloaded"],
     });
 
     const content = await page.content();
+    await delay(2000)
     await browser.close();
 
     const $ = cheerio.load(content);
@@ -58,6 +56,10 @@ const checkForNewJobs = async () => {
     });
 
     return jobs;
+    } catch (error) {
+        console.error("Error scraping jobs:", error);
+        return [];
+    }
 };
 
 // Array to store previously seen job UIDs
@@ -85,7 +87,7 @@ const monitorJobs = async () => {
     // Log all jobs if it’s the first run for reference
     if (isFirstRun) {
         console.log("Initial run - jobs found:", newJobs.length);
-
+        return { newJobs: newJobs.length };
     }
 
     // Update previous jobs array and reset isFirstRun flag
