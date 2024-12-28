@@ -6,7 +6,6 @@ const User = require("../db/models/user");
 router.post("/:userId/tasks", async (req, res) => {
     const { userId } = req.params;
     const { url, interval, webhookUrl } = req.body;
-
     try {
         const user = await User.findById(userId);
 
